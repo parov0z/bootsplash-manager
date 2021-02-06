@@ -26,5 +26,5 @@ build() {
 
 package() {
     install -Dm755 bootsplash-manager "$pkgdir/usr/bin/bootsplash-manager"
-    install -Dm644 org.manjaro.bootsplash-manager.policy "$pkgdir/usr/share/polkit-1/actions/"
+    install -Dm644 org.manjaro.bootsplash-manager.policy "$pkgdir/usr/share/polkit-1/actions/org.manjaro.bootsplash-manager.policy"
 }
