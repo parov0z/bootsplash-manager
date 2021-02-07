@@ -37,3 +37,5 @@ cd bootsplash-manager
 cmake .
 make
 ```
+## TODO
+- [ ] gui
