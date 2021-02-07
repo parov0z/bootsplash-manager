@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
           || strcmp( argv[1], "--set"     ) == 0 )    return setTheme( argv[2] );
     }
     out << "unknown command\n\n";
+    out.flush();
     return help();
 }
 
