@@ -16,7 +16,7 @@ source=("CMakeLists.txt"
         "org.manjaro.bootsplash-manager.policy")
 
 md5sums=('c15c5c3dbb5d60868db08caaf63ff901'
-         '89c8a891294a4e9ab7cfc6ae8e58c7b8'
+         '8a8ef82d4ad27e743d38be739724a463'
          'bff11696553f09c850aee775a83ba4d3')
 
 build() {
