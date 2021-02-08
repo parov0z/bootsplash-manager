@@ -1,7 +1,7 @@
 # Maintainer: ANDRoid7890 <andrey.android7890@gmail.com>
 
 pkgname=bootsplash-manager
-pkgver=1.1
+pkgver=1.2
 pkgrel=1
 pkgdesc="Simple cli bootsplash manager"
 url="https://github.com/ANDRoid7890/bootsplash-manager"
