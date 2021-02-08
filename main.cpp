@@ -9,7 +9,7 @@
 #include <QProcess>
 
 int help();
-int setTheme( QString theme );
+int setTheme( const QString& theme );
 int setLog();
 int disable();
 int list();
@@ -61,7 +61,7 @@ int help(){
     return 0;
 }
 
-int setTheme( QString theme ){
+int setTheme( const QString& theme ){
     QTextStream out( stdout );
 
     if ( !QDir( "/usr/lib/firmware/bootsplash-themes/"+theme ).exists() ) {
