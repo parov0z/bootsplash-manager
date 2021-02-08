@@ -139,9 +139,14 @@ int setTheme( QString theme ){
     position = data.indexOf( QRegularExpression("^HOOKS=.*") );
     hooks = data.at( position );
 
-    QStringList hooksList = hooks.replace( QRegularExpression("^HOOKS="), "" )
-                                 .replace('"', "")
-                                 .split(' ');
+    bool bracketsFlag = hooks.contains( QRegularExpression("^HOOKS=[(].*") );
+
+    hooks.replace( QRegularExpression("^HOOKS="), "" );
+    if ( bracketsFlag ) hooks.replace('(', "")
+                             .replace(')', "");
+    else                hooks.replace('"', "");
+
+    QStringList hooksList = hooks.split(' ');
     bool hooksFlag=1;
     for ( const QString& t : qAsConst(themesList) )
         if ( !hooksList.contains( "bootsplash-"+t ) )
@@ -156,9 +161,9 @@ int setTheme( QString theme ){
         for ( const QString& t : qAsConst(themesList) )
             hooksList.append( "bootsplash-"+t );
         hooks.clear();
-        hooks="HOOKS=\"";
+        hooks=bracketsFlag?"HOOKS=(":"HOOKS=\"";
         for ( const QString& s : qAsConst(hooksList) ) hooks.append( s ).append( ' ' );
-        hooks.replace( QRegularExpression( "\\s$" ), "\"" );
+        hooks.replace( QRegularExpression( "\\s$" ), bracketsFlag?")":"\"" );
         data.replace( position, hooks );
 
         // write initcpio

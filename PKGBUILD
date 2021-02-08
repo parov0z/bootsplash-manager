@@ -1,7 +1,7 @@
 # Maintainer: ANDRoid7890 <andrey.android7890@gmail.com>
 
 pkgname=bootsplash-manager
-pkgver=1.0
+pkgver=1.1
 pkgrel=1
 pkgdesc="Simple cli bootsplash manager"
 url="https://github.com/ANDRoid7890/bootsplash-manager"
@@ -16,7 +16,7 @@ source=("CMakeLists.txt"
         "org.manjaro.bootsplash-manager.policy")
 
 md5sums=('c15c5c3dbb5d60868db08caaf63ff901'
-         '8a8ef82d4ad27e743d38be739724a463'
+         'fd9706296aeb49b51d4d026d7691693d'
          'bff11696553f09c850aee775a83ba4d3')
 
 build() {
