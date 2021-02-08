@@ -353,7 +353,7 @@ int status(){
         QString hooks;
         while ( !hooks.contains( QRegularExpression("^HOOKS=") ) )
             hooks = initcpio.readLine();
-        hooksFlag = hooks.contains( QRegularExpression("[\\s,\"]bootsplash-"+theme+"[\\s,\"]") );
+        hooksFlag = hooks.contains( QRegularExpression("[\\s,\",(]bootsplash-"+theme+"[\\s,\",)]") );
 
         out << ( hooksFlag?
                    ok+" current theme is in hooks list\n"
