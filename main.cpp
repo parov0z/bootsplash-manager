@@ -111,7 +111,7 @@ int setTheme( const QString& theme ){
     out << "Writing GRUB...\nbackup will be saved to /etc/default/grub.bak\n\n";
     out.flush();
 
-    system( "cp /etc/default/grub /etc/default/grub.bak" );
+    QFile::copy( "/etc/default/grub", "/etc/default/grub.bak" );
 
     grub.resize( 0 );
     for ( const QString& s : qAsConst(data) ) grub.write( ( s + '\n' ).toUtf8() );
@@ -119,7 +119,7 @@ int setTheme( const QString& theme ){
 
     out << "Updating GRUB...\n\n";
     out.flush();
-    system("grub-mkconfig -o /boot/grub/grub.cfg");
+    QProcess::execute( "grub-mkconfig", { "-o", "/boot/grub/grub.cfg" } );
 
     data.clear();
 
@@ -170,7 +170,7 @@ int setTheme( const QString& theme ){
         out << "Writing initcpio...\nbackup will be saved to /etc/mkinitcpio.conf.bak\n\n";
         out.flush();
 
-        system( "cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak" );
+        QFile::copy( "/etc/mkinitcpio.conf", "/etc/mkinitcpio.conf.bak" );
 
         initcpio.resize( 0 );
         for ( const QString& s : qAsConst(data) ) initcpio.write( ( s + '\n' ).toUtf8() );
@@ -178,7 +178,7 @@ int setTheme( const QString& theme ){
 
         out << "\n\nupdating initcpio...\n\n";
         out.flush();
-        system("mkinitcpio -P");
+        QProcess::execute( "mkinitcpio", { "-P" } );
 
     }
     return 0;
@@ -225,7 +225,7 @@ int setLog(){
     out << "Writing GRUB...\nbackup will be saved to /etc/default/grub.bak\n\n";
     out.flush();
 
-    system( "cp /etc/default/grub /etc/default/grub.bak" );
+    QFile::copy( "/etc/default/grub", "/etc/default/grub.bak" );
     grub.resize( 0 );
     for ( const QString& s : qAsConst(data) ) grub.write( ( s + '\n' ).toUtf8() );
     grub.close();
@@ -234,7 +234,7 @@ int setLog(){
 
     out << "updating GRUB...\n\n";
     out.flush();
-    system("grub-mkconfig -o /boot/grub/grub.cfg");
+    QProcess::execute( "grub-mkconfig", { "-o", "/boot/grub/grub.cfg" } );
     return 0;
 
 }
@@ -280,7 +280,7 @@ int disable(){
     out << "Writing GRUB...\nbackup will be saved to /etc/default/grub.bak\n\n";
     out.flush();
 
-    system( "cp /etc/default/grub /etc/default/grub.bak" );
+    QFile::copy( "/etc/default/grub", "/etc/default/grub.bak" );
     grub.resize( 0 );
     for ( const QString& s : qAsConst(data) ) grub.write( ( s + '\n' ).toUtf8() );
     grub.close();
@@ -289,7 +289,7 @@ int disable(){
 
     out << "updating GRUB...\n\n";
     out.flush();
-    system("grub-mkconfig -o /boot/grub/grub.cfg");
+    QProcess::execute( "grub-mkconfig", { "-o", "/boot/grub/grub.cfg" } );
     return 0;
 }
 int list(){
