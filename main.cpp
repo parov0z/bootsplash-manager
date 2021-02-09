@@ -102,8 +102,8 @@ int setTheme( const QString& theme ){
 
     cmdline.clear();
     cmdline="GRUB_CMDLINE_LINUX_DEFAULT=\"";
-    for ( const QString& s : qAsConst(cmdlineList) ) cmdline.append( s ).append( ' ' );
-    cmdline.replace( QRegularExpression( "\\s$" ), "\"");
+    cmdline += cmdlineList.join(' ');
+    cmdline += "\"";
 
     data.replace( position, cmdline );
 
@@ -164,8 +164,8 @@ int setTheme( const QString& theme ){
             hooksList.append( "bootsplash-"+t );
         hooks.clear();
         hooks=bracketsFlag?"HOOKS=(":"HOOKS=\"";
-        for ( const QString& s : qAsConst(hooksList) ) hooks.append( s ).append( ' ' );
-        hooks.replace( QRegularExpression( "\\s$" ), bracketsFlag?")":"\"" );
+        hooks+=hooksList.join(' ');
+        hooks+=bracketsFlag?")":"\"";
         data.replace( position, hooks );
 
         // write initcpio
@@ -218,8 +218,8 @@ int setLog(){
 
     cmdline.clear();
     cmdline="GRUB_CMDLINE_LINUX_DEFAULT=\"";
-    for ( const QString& s : qAsConst(cmdlineList) ) cmdline.append( s ).append( ' ' );
-    cmdline.replace( QRegularExpression( "\\s$" ), "\"");
+    cmdline+=cmdlineList.join(' ');
+    cmdline+="\"";
 
     data.replace( position, cmdline );
 
@@ -273,8 +273,8 @@ int disable(){
 
     cmdline.clear();
     cmdline="GRUB_CMDLINE_LINUX_DEFAULT=\"";
-    for ( const QString& s : qAsConst(cmdlineList) ) cmdline.append( s ).append( ' ' );
-    cmdline.replace( QRegularExpression( "\\s$" ), "\"");
+    cmdline+=cmdlineList.join(' ');
+    cmdline+="\"";
 
     data.replace( position, cmdline );
 
