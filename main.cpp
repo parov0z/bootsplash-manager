@@ -90,11 +90,11 @@ int setTheme( const QString& theme ){
                                      .split( ' ' );
     cmdlineList.removeAll( "quiet" );
 
-    bool bootfileFlag=0;
+    bool bootfileFlag = false;
     for ( int i=0; i<cmdlineList.size(); i++ ){
         if ( cmdlineList.at( i ).contains( "bootsplash.bootfile" ) ){
             cmdlineList.replace( i, "bootsplash.bootfile=/bootsplash-themes/"+theme+"/bootsplash" );
-            bootfileFlag = 1;
+            bootfileFlag = true;
             break;
         }
     }
@@ -147,10 +147,12 @@ int setTheme( const QString& theme ){
     else                hooks.replace('"', "");
 
     QStringList hooksList = hooks.split(' ');
-    bool hooksFlag=1;
+    bool hooksFlag = true;
     for ( const QString& t : qAsConst(themesList) )
-        if ( !hooksList.contains( "bootsplash-"+t ) )
-            hooksFlag=0;
+        if ( !hooksList.contains( "bootsplash-"+t ) ){
+            hooksFlag = false;
+            break;
+        }
 
     if ( !hooksFlag ){
         auto last_it = std::remove_if( hooksList.begin(),
@@ -308,7 +310,7 @@ int list(){
 int status(){
     QTextStream out( stdout );
 
-    bool kernelFlag = 0, quietFlag=0, bootfileFlag=0, hooksFlag=0;
+    bool kernelFlag = false, quietFlag = false, bootfileFlag = false, hooksFlag = false;
 
     QProcess readconf;
     readconf.start( "zgrep", QStringList() << "CONFIG_BOOTSPLASH" << "/proc/config.gz" );
@@ -327,9 +329,9 @@ int status(){
                                      .split( ' ' );
     QString theme;
     for ( const QString& opt : qAsConst(cmdlineList) ){
-        if ( opt=="quiet" ) quietFlag=1;
+        if ( opt=="quiet" ) quietFlag = true;
         if ( opt.contains( "bootsplash.bootfile=" ) ){
-            bootfileFlag=1;
+            bootfileFlag = true;
             theme=opt;
         }
     }
