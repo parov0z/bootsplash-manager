@@ -9,7 +9,7 @@
 #include <QProcess>
 
 int help();
-int setTheme( QString theme );
+int setTheme( const QString& theme );
 int setLog();
 int disable();
 int list();
@@ -61,7 +61,7 @@ int help(){
     return 0;
 }
 
-int setTheme( QString theme ){
+int setTheme( const QString& theme ){
     QTextStream out( stdout );
 
     if ( !QDir( "/usr/lib/firmware/bootsplash-themes/"+theme ).exists() ) {
@@ -90,11 +90,11 @@ int setTheme( QString theme ){
                                      .split( ' ' );
     cmdlineList.removeAll( "quiet" );
 
-    bool bootfileFlag=0;
+    bool bootfileFlag = false;
     for ( int i=0; i<cmdlineList.size(); i++ ){
         if ( cmdlineList.at( i ).contains( "bootsplash.bootfile" ) ){
             cmdlineList.replace( i, "bootsplash.bootfile=/bootsplash-themes/"+theme+"/bootsplash" );
-            bootfileFlag = 1;
+            bootfileFlag = true;
             break;
         }
     }
@@ -102,8 +102,8 @@ int setTheme( QString theme ){
 
     cmdline.clear();
     cmdline="GRUB_CMDLINE_LINUX_DEFAULT=\"";
-    for ( const QString& s : qAsConst(cmdlineList) ) cmdline.append( s ).append( ' ' );
-    cmdline.replace( QRegularExpression( "\\s$" ), "\"");
+    cmdline += cmdlineList.join(' ');
+    cmdline += "\"";
 
     data.replace( position, cmdline );
 
@@ -111,7 +111,7 @@ int setTheme( QString theme ){
     out << "Writing GRUB...\nbackup will be saved to /etc/default/grub.bak\n\n";
     out.flush();
 
-    system( "cp /etc/default/grub /etc/default/grub.bak" );
+    QFile::copy( "/etc/default/grub", "/etc/default/grub.bak" );
 
     grub.resize( 0 );
     for ( const QString& s : qAsConst(data) ) grub.write( ( s + '\n' ).toUtf8() );
@@ -119,7 +119,7 @@ int setTheme( QString theme ){
 
     out << "Updating GRUB...\n\n";
     out.flush();
-    system("grub-mkconfig -o /boot/grub/grub.cfg");
+    QProcess::execute( "grub-mkconfig", { "-o", "/boot/grub/grub.cfg" } );
 
     data.clear();
 
@@ -147,10 +147,12 @@ int setTheme( QString theme ){
     else                hooks.replace('"', "");
 
     QStringList hooksList = hooks.split(' ');
-    bool hooksFlag=1;
+    bool hooksFlag = true;
     for ( const QString& t : qAsConst(themesList) )
-        if ( !hooksList.contains( "bootsplash-"+t ) )
-            hooksFlag=0;
+        if ( !hooksList.contains( "bootsplash-"+t ) ){
+            hooksFlag = false;
+            break;
+        }
 
     if ( !hooksFlag ){
         auto last_it = std::remove_if( hooksList.begin(),
@@ -162,15 +164,15 @@ int setTheme( QString theme ){
             hooksList.append( "bootsplash-"+t );
         hooks.clear();
         hooks=bracketsFlag?"HOOKS=(":"HOOKS=\"";
-        for ( const QString& s : qAsConst(hooksList) ) hooks.append( s ).append( ' ' );
-        hooks.replace( QRegularExpression( "\\s$" ), bracketsFlag?")":"\"" );
+        hooks+=hooksList.join(' ');
+        hooks+=bracketsFlag?")":"\"";
         data.replace( position, hooks );
 
         // write initcpio
         out << "Writing initcpio...\nbackup will be saved to /etc/mkinitcpio.conf.bak\n\n";
         out.flush();
 
-        system( "cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak" );
+        QFile::copy( "/etc/mkinitcpio.conf", "/etc/mkinitcpio.conf.bak" );
 
         initcpio.resize( 0 );
         for ( const QString& s : qAsConst(data) ) initcpio.write( ( s + '\n' ).toUtf8() );
@@ -178,7 +180,7 @@ int setTheme( QString theme ){
 
         out << "\n\nupdating initcpio...\n\n";
         out.flush();
-        system("mkinitcpio -P");
+        QProcess::execute( "mkinitcpio", { "-P" } );
 
     }
     return 0;
@@ -216,8 +218,8 @@ int setLog(){
 
     cmdline.clear();
     cmdline="GRUB_CMDLINE_LINUX_DEFAULT=\"";
-    for ( const QString& s : qAsConst(cmdlineList) ) cmdline.append( s ).append( ' ' );
-    cmdline.replace( QRegularExpression( "\\s$" ), "\"");
+    cmdline+=cmdlineList.join(' ');
+    cmdline+="\"";
 
     data.replace( position, cmdline );
 
@@ -225,7 +227,7 @@ int setLog(){
     out << "Writing GRUB...\nbackup will be saved to /etc/default/grub.bak\n\n";
     out.flush();
 
-    system( "cp /etc/default/grub /etc/default/grub.bak" );
+    QFile::copy( "/etc/default/grub", "/etc/default/grub.bak" );
     grub.resize( 0 );
     for ( const QString& s : qAsConst(data) ) grub.write( ( s + '\n' ).toUtf8() );
     grub.close();
@@ -234,7 +236,7 @@ int setLog(){
 
     out << "updating GRUB...\n\n";
     out.flush();
-    system("grub-mkconfig -o /boot/grub/grub.cfg");
+    QProcess::execute( "grub-mkconfig", { "-o", "/boot/grub/grub.cfg" } );
     return 0;
 
 }
@@ -271,8 +273,8 @@ int disable(){
 
     cmdline.clear();
     cmdline="GRUB_CMDLINE_LINUX_DEFAULT=\"";
-    for ( const QString& s : qAsConst(cmdlineList) ) cmdline.append( s ).append( ' ' );
-    cmdline.replace( QRegularExpression( "\\s$" ), "\"");
+    cmdline+=cmdlineList.join(' ');
+    cmdline+="\"";
 
     data.replace( position, cmdline );
 
@@ -280,7 +282,7 @@ int disable(){
     out << "Writing GRUB...\nbackup will be saved to /etc/default/grub.bak\n\n";
     out.flush();
 
-    system( "cp /etc/default/grub /etc/default/grub.bak" );
+    QFile::copy( "/etc/default/grub", "/etc/default/grub.bak" );
     grub.resize( 0 );
     for ( const QString& s : qAsConst(data) ) grub.write( ( s + '\n' ).toUtf8() );
     grub.close();
@@ -289,7 +291,7 @@ int disable(){
 
     out << "updating GRUB...\n\n";
     out.flush();
-    system("grub-mkconfig -o /boot/grub/grub.cfg");
+    QProcess::execute( "grub-mkconfig", { "-o", "/boot/grub/grub.cfg" } );
     return 0;
 }
 int list(){
@@ -308,7 +310,7 @@ int list(){
 int status(){
     QTextStream out( stdout );
 
-    bool kernelFlag = 0, quietFlag=0, bootfileFlag=0, hooksFlag=0;
+    bool kernelFlag = false, quietFlag = false, bootfileFlag = false, hooksFlag = false;
 
     QProcess readconf;
     readconf.start( "zgrep", QStringList() << "CONFIG_BOOTSPLASH" << "/proc/config.gz" );
@@ -327,9 +329,9 @@ int status(){
                                      .split( ' ' );
     QString theme;
     for ( const QString& opt : qAsConst(cmdlineList) ){
-        if ( opt=="quiet" ) quietFlag=1;
+        if ( opt=="quiet" ) quietFlag = true;
         if ( opt.contains( "bootsplash.bootfile=" ) ){
-            bootfileFlag=1;
+            bootfileFlag = true;
             theme=opt;
         }
     }
