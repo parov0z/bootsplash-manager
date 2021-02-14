@@ -38,5 +38,4 @@ cmake .
 make
 ```
 ## TODO
-- [ ] clean code from my noobism
 - [ ] gui
