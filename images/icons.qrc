@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>black.svg</file>
+        <file>icons.qrc</file>
+        <file>log.svg</file>
+        <file>manjaro.svg</file>
+        <file>theme.svg</file>
+    </qresource>
+</RCC>

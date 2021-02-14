@@ -5,6 +5,7 @@
 <policyconfig>
 <vendor>manjaro-bootsplash-manager</vendor>
    <action id="org.manjaro.bootsplash-manager.change-theme" >
+      <icon_name>bootsplash-manager-gui</icon_name>
       <description>Change or remove bootsplash theme</description>
       <message>Change or remove bootsplash theme</message>
       <defaults>

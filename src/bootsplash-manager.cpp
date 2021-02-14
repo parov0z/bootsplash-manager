@@ -90,6 +90,8 @@ int setTheme( const QString& theme ){
                                      .split( ' ' );
     cmdlineList.removeAll( "quiet" );
 
+
+
     bool bootfileFlag = false;
     for ( int i=0; i<cmdlineList.size(); i++ ){
         if ( cmdlineList.at( i ).contains( "bootsplash.bootfile" ) ){
@@ -267,7 +269,7 @@ int disable(){
                                      .replace( "\"", "" )
                                      .split( ' ' );
 
-    if ( cmdlineList.indexOf("quiet")==-1 )  cmdlineList.append( "quiet" );
+    if ( cmdlineList.indexOf(QRegExp("quiet($|\n)"))==-1 )  cmdlineList.append( "quiet" );
 
     cmdlineList.removeAt( cmdlineList.indexOf( QRegularExpression("bootsplash.bootfile=.*") ) );
 
