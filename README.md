@@ -1,5 +1,8 @@
 # bootsplash-manager
 Simple bootsplash manager for Manjaro
+<p align="center">
+   <img src="https://raw.githubusercontent.com/ANDRoid7890/bootsplash-manager/master/images/bootsplash-manager-gui.svg"/>
+</p>
 
 ## Features
 ### gui
