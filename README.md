@@ -2,12 +2,12 @@
 Simple bootsplash manager for Manjaro
 
 ## Features
-###Gui
+### gui
 <p align="center">
    <img src="https://github.com/ANDRoid7890/bootsplash-manager/blob/master/screenshots/main%20window.png?raw=true"/>
 </p>
 
-###Cli
+### cli
 * Check if bootsplash is enabled and supported by current kernel:  `bootsplash-manager --status`
 * List installed themes                                            `bootsplash-manager --list`
 * Enable bootsplash and change current theme                       `bootsplash-manager --set <theme_name>`
