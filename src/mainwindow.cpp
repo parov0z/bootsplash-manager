@@ -54,9 +54,8 @@ void refresh( QStringList& themes, QString& CurrentTheme ){
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-{
+{ 
     ui->setupUi(this);
-    setWindowTitle("Manjaro Bootsplash Manager");
     new QListWidgetItem(QIcon(":/icons/black.svg"),
                         "black screen",
                         ui->listWidget);

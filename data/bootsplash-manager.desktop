@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Manjaro Bootsplash Manager
+Comment=Simple bootsplash manager
+Comment[ru]=Управление загрузочными анимациями
+Exec=bootsplash-manager-gui
+Icon=bootsplash-manager-gui
+Terminal=false
+StartupNotify=false
+Type=Application
+Categories=System
