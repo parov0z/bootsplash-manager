@@ -10,7 +10,8 @@ Simple bootsplash manager for Manjaro
 * remove theme (if it was installed from package manager)
 * install themes from repos or AUR
 <p align="center">
-   <img src="https://github.com/ANDRoid7890/bootsplash-manager/blob/master/screenshots/main%20window.png?raw=true"/>
+   <img src="https://raw.githubusercontent.com/ANDRoid7890/bootsplash-manager/master/screenshots/main%20window.png"/>
+   <img src="https://raw.githubusercontent.com/ANDRoid7890/bootsplash-manager/master/screenshots/Install%20dialog.png"/>
 </p>
 
 ### cli
