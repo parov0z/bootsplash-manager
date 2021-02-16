@@ -144,9 +144,9 @@ int setTheme( const QString& theme ){
     bool bracketsFlag = hooks.contains( QRegularExpression("^HOOKS=[(].*") );
 
     hooks.replace( QRegularExpression("^HOOKS="), "" );
-    if ( bracketsFlag ) hooks.replace('(', "")
-                             .replace(')', "");
-    else                hooks.replace('"', "");
+    if ( bracketsFlag ) hooks.replace( '(', "" )
+                             .replace( ')', "" );
+    else                hooks.replace( '"', "" );
 
     QStringList hooksList = hooks.split(' ');
     bool hooksFlag = true;

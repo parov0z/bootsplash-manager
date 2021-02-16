@@ -23,6 +23,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/mainwindow.cpp
         src/mainwindow.h
         src/mainwindow.ui
+        src/installdialog.cpp
+        src/installdialog.h
+        src/installdialog.ui
         images/icons.qrc
     )
 else()
@@ -31,6 +34,9 @@ else()
         src/mainwindow.cpp
         src/mainwindow.h
         src/mainwindow.ui
+        src/installdialog.cpp
+        src/installdialog.h
+        src/installdialog.ui
         images/icons.qrc
     )
 endif()

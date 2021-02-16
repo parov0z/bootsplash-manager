@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QListWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,6 +14,7 @@ class MainWindow : public QMainWindow
 public:
     QString CurrentTheme;
     QStringList themes;
+    void refresh();
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private slots:
@@ -22,6 +22,10 @@ private slots:
 
 
     void on_ApplyButton_clicked();
+
+    void on_InstallButton_clicked();
+
+    void on_RemoveButton_clicked();
 
 private:
     Ui::MainWindow *ui;

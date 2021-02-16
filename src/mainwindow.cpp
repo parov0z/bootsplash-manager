@@ -1,20 +1,24 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "installdialog.h"
+
 #include <QListWidget>
 #include <QDir>
 #include <QMessageBox>
 #include <QProcess>
 #include <QProgressDialog>
 
+#include <QTextStream>
 
-void refresh( QStringList& themes, QString& CurrentTheme ){
+
+void MainWindow::refresh(){
     // get list
     QDir d( "/usr/lib/firmware/bootsplash-themes/" );
     d.setFilter( QDir::NoDotAndDotDot | QDir::Dirs );
     if ( !d.exists() || d.count() == 0 ){
         QMessageBox m;
         m.setText("No installed themes detected");
-        m.setIcon(QMessageBox::Information);
+        m.setIcon( QMessageBox::Information );
         m.exec();
     }
     else {
@@ -33,7 +37,10 @@ void refresh( QStringList& themes, QString& CurrentTheme ){
                                      .split( ' ' );
     bool bootfileFlag = false;
 
-    if ( cmdlineList.indexOf(QRegExp("quiet($|\n)"))!=-1 ) CurrentTheme = "black screen";
+                             // Don't know why, but when it's last item of QStringList, it has \n at the end
+                             // Don't remember having this problem in cli (bootsplash-manager.cpp), I tested it multiple times, but added same fix it there too as a precaution
+                             //               \/
+    if ( cmdlineList.indexOf( QRegExp("quiet($|\n)") ) != -1 ) CurrentTheme = "black screen";
     else {
         for ( const QString& opt : qAsConst(cmdlineList) ){
             if ( opt.contains( "bootsplash.bootfile=" ) ){
@@ -47,15 +54,8 @@ void refresh( QStringList& themes, QString& CurrentTheme ){
 
     if ( !bootfileFlag ) CurrentTheme = "boot log";
     }
-}
+    ui->listWidget->clear();
 
-
-
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-{ 
-    ui->setupUi(this);
     new QListWidgetItem(QIcon(":/icons/black.svg"),
                         "black screen",
                         ui->listWidget);
@@ -63,13 +63,11 @@ MainWindow::MainWindow(QWidget *parent)
                         "boot log",
                         ui->listWidget);
 
-    refresh( themes, CurrentTheme );
-
     int position = 0;
     if ( CurrentTheme == "boot log" ) position = 1;
     for ( int i = 0; i<themes.size(); i++ ){
-        if ( themes.at(i) == CurrentTheme ) position = i+2;
-        new QListWidgetItem( QIcon(themes.at(i).contains("manjaro")?
+        if ( themes.at( i ) == CurrentTheme ) position = i+2;
+        new QListWidgetItem( QIcon(themes.at( i ).contains("manjaro")?
                                      ":/icons/manjaro.svg"
                                     :":/icons/theme.svg"),
                              themes[i],
@@ -77,7 +75,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     }
 
-    ui->listWidget->setCurrentRow(position);
+    ui->listWidget->setCurrentRow( position );
+}
+
+
+
+MainWindow::MainWindow( QWidget *parent )
+    : QMainWindow( parent )
+    , ui( new Ui::MainWindow )
+{ 
+    ui->setupUi( this );
+    refresh();
 }
 
 MainWindow::~MainWindow()
@@ -86,37 +94,107 @@ MainWindow::~MainWindow()
 }
 void MainWindow::on_listWidget_currentItemChanged()
 {
-    if ( ui->listWidget->currentItem()->text() == CurrentTheme )
-        ui->ApplyButton->setEnabled(false);
-    else ui->ApplyButton->setEnabled(true);
+    if ( ui->listWidget->currentRow() != -1 ){
+        if ( ui->listWidget->currentRow() == 0
+          || ui->listWidget->currentRow() == 1 )
+            ui->RemoveButton ->setEnabled( false );
+        else ui->RemoveButton->setEnabled( true );
+
+        if ( ui->listWidget->currentItem()->text() == CurrentTheme ){
+            ui->ApplyButton ->setEnabled( false );
+            ui->RemoveButton->setEnabled( false );
+        }
+        else ui->ApplyButton->setEnabled( true );
+    }
 }
 void MainWindow::on_ApplyButton_clicked()
 {
     QProcess pkexec;
-    pkexec.setProgram("pkexec");
+    pkexec.setProgram( "pkexec" );
 
     if ( ui->listWidget->currentRow() == 0 )
         pkexec.setArguments( QStringList() << "bootsplash-manager" << "-d" );
     else if ( ui->listWidget->currentRow() == 1 )
-        pkexec.setArguments( QStringList() << "/usr/bin/bootsplash-manager" << "--set-log" );
+        pkexec.setArguments( QStringList() << "bootsplash-manager" << "--set-log" );
     else{
         QString theme = ui->listWidget->currentItem()->text();
-        pkexec.setArguments( QStringList() << "/usr/bin/bootsplash-manager" << "-s" << theme );
+        pkexec.setArguments( QStringList() << "bootsplash-manager" << "-s" << theme );
     }
 
-    ui->ApplyButton->setEnabled(false);
-    ui->centralwidget->setEnabled(false);   
-    QApplication::setOverrideCursor(Qt::WaitCursor);
+    ui->ApplyButton->setEnabled( false );
+    ui->centralwidget->setEnabled( false );
+    QApplication::setOverrideCursor( Qt::WaitCursor );
     pkexec.start();
 
 
-    pkexec.waitForFinished(-1);
+    pkexec.waitForFinished( -1 );
     QApplication::restoreOverrideCursor();
+    refresh();
     ui->centralwidget->setEnabled(true);
-    refresh( themes, CurrentTheme );
-    int position = 0;
-    if ( CurrentTheme == "boot log" ) position = 1;
-    for ( int i = 0; i < themes.size(); i++ )
-        if ( themes.at(i) == CurrentTheme ) position = i+2;
-    ui->listWidget->setCurrentRow(position);
+}
+
+void MainWindow::on_InstallButton_clicked()
+{
+    InstallDialog d;
+    d.exec();
+    refresh();
+}
+
+void MainWindow::on_RemoveButton_clicked()
+{
+    QProcess pkgname;
+    pkgname.setProgram( "pamac" );
+    pkgname.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
+
+    QString theme = ui->listWidget->currentItem()->text();
+    pkgname.setArguments( QStringList() << "search"
+                                        << "--installed"
+                                        << "--files"
+                                        << "--aur"
+                                        << "/usr/lib/firmware/bootsplash-themes/"+theme+"/" );
+
+    ui->centralwidget->setEnabled( false );
+    QApplication::setOverrideCursor( Qt::WaitCursor );
+    pkgname.start();
+
+    pkgname.waitForFinished( -1 );
+    QApplication::restoreOverrideCursor();
+
+    QString result = QString( pkgname.readAll() );
+    // possible pamac output
+    // /usr/lib/firmware/bootsplash-themes/manjaro/bootsplash is owned by bootsplash-theme-manjaro
+    // No package owns /usr/lib/firmware/bootsplash-themes/what
+
+    if ( result.contains( "No package owns" ) ){
+        QMessageBox b;
+        b.setWindowTitle( "Warning" );
+        b.setIcon( QMessageBox::Critical );
+        b.setText( "Can't find that package\n"
+                   "Are you sure that theme was installed via package manager?" );
+        b.exec();
+    }
+    else{
+        result.remove( QRegularExpression("^.* is owned by ") )
+              .remove( "\n" );
+
+        QMessageBox b;
+        b.setText( "Do you really want to remove "+result+"?" );
+        b.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+
+        if ( b.exec() == 0x00004000 ){
+            QProcess remove;
+            remove.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
+            remove.setProgram( "pamac" );
+            remove.setArguments( QStringList() << "remove"
+                                               << "--no-confirm"
+                                               << result );
+            remove.start();
+            QApplication::setOverrideCursor( Qt::WaitCursor );
+            remove.waitForFinished( -1 );
+            QApplication::restoreOverrideCursor();
+        }
+    }
+
+    refresh();
+    ui->centralwidget->setEnabled(true);
 }

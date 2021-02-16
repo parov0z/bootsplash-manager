@@ -5,6 +5,14 @@
   <property name="enabled">
    <bool>true</bool>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>400</height>
+   </rect>
+  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
@@ -21,7 +29,8 @@
    <string notr="true">Manjaro Bootsplash Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset theme=":/icons/bootsplash-manager-gui.svg"/>
+   <iconset theme=":/icons/bootsplash-manager-gui.svg">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -42,6 +51,28 @@
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="RemoveButton">
+        <property name="text">
+         <string notr="true"/>
+        </property>
+        <property name="icon">
+         <iconset theme="delete">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="InstallButton">
+        <property name="text">
+         <string notr="true"/>
+        </property>
+        <property name="icon">
+         <iconset theme="download">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer">
