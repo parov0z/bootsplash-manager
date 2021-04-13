@@ -53,5 +53,5 @@ make
 ## TODO
 - [x] gui
 - [x] install/remove dialog
-- [ ] theme preview
+- [x] theme preview
 - [ ] translations
