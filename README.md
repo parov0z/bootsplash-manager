@@ -8,6 +8,7 @@ Simple bootsplash manager for Manjaro
 ### gui
 * show all installed themes
 * remove theme (if it was installed from package manager)
+* show a fullscreen preview
 * install themes from repos or AUR
 <p align="center">
    <img src="https://raw.githubusercontent.com/ANDRoid7890/bootsplash-manager/master/screenshots/main%20window.png"/>
