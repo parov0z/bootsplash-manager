@@ -212,9 +212,7 @@ void MainWindow::on_RemoveButton_clicked()
 void MainWindow::on_previewButton_clicked()
 {
     QString path = "/usr/lib/firmware/bootsplash-themes/" +
-            ui->listWidget->currentItem()->text() +
-            "/bootsplash";
-
-    const char *arg = ( path ).toUtf8();
-    bootsplashViewer( arg );
+                    ui->listWidget->currentItem()->text() +
+                    "/bootsplash";
+    bootsplashViewer( path.toUtf8() );
 }
