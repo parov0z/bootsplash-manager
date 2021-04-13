@@ -88,6 +88,16 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="previewButton">
+        <property name="text">
+         <string notr="true"/>
+        </property>
+        <property name="icon">
+         <iconset theme="media-play"/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="ApplyButton">
         <property name="enabled">
          <bool>true</bool>

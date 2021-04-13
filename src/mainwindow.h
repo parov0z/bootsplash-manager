@@ -27,6 +27,8 @@ private slots:
 
     void on_RemoveButton_clicked();
 
+    void on_previewButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

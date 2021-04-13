@@ -95,16 +95,24 @@ MainWindow::~MainWindow()
 void MainWindow::on_listWidget_currentItemChanged()
 {
     if ( ui->listWidget->currentRow() != -1 ){
+
         if ( ui->listWidget->currentRow() == 0
           || ui->listWidget->currentRow() == 1 )
-            ui->RemoveButton ->setEnabled( false );
-        else ui->RemoveButton->setEnabled( true );
+        {
+            ui->RemoveButton  -> setEnabled( false );
+            ui->previewButton -> setEnabled( false );
+        } else {
+            ui->RemoveButton  -> setEnabled(  true );
+            ui->previewButton -> setEnabled(  true );
+        }
 
         if ( ui->listWidget->currentItem()->text() == CurrentTheme ){
             ui->ApplyButton ->setEnabled( false );
             ui->RemoveButton->setEnabled( false );
         }
-        else ui->ApplyButton->setEnabled( true );
+        else
+            ui->ApplyButton->setEnabled(  true );
+
     }
 }
 void MainWindow::on_ApplyButton_clicked()
@@ -197,4 +205,15 @@ void MainWindow::on_RemoveButton_clicked()
 
     refresh();
     ui->centralwidget->setEnabled(true);
+}
+
+void MainWindow::on_previewButton_clicked()
+{
+    QString theme = ui->listWidget->currentItem()->text();
+
+    QProcess viewer;
+    viewer.setProgram( "bootsplash-viewer" );
+    viewer.setArguments( QStringList() << "/usr/lib/firmware/bootsplash-themes/"+theme+"/bootsplash" );
+
+    viewer.startDetached();
 }
