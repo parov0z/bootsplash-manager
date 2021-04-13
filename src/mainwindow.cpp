@@ -10,6 +10,8 @@
 
 #include <QTextStream>
 
+extern "C" int bootsplashViewer( const char* arg );
+
 
 void MainWindow::refresh(){
     // get list
@@ -209,11 +211,10 @@ void MainWindow::on_RemoveButton_clicked()
 
 void MainWindow::on_previewButton_clicked()
 {
-    QString theme = ui->listWidget->currentItem()->text();
+    QString path = "/usr/lib/firmware/bootsplash-themes/" +
+            ui->listWidget->currentItem()->text() +
+            "/bootsplash";
 
-    QProcess viewer;
-    viewer.setProgram( "bootsplash-viewer" );
-    viewer.setArguments( QStringList() << "/usr/lib/firmware/bootsplash-themes/"+theme+"/bootsplash" );
-
-    viewer.startDetached();
+    const char *arg = ( path ).toUtf8();
+    bootsplashViewer( arg );
 }

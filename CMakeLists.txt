@@ -21,12 +21,6 @@ add_executable(bootsplash-manager
     src/bootsplash-manager.cpp
 )
 
-add_executable(
-    bootsplash-viewer src/bootsplash-viewer.c
-)
-target_include_directories(bootsplash-viewer PRIVATE ${SDL2_INCLUDE_DIRS} .)
-target_link_libraries(bootsplash-viewer ${SDL2_LIBRARIES})
-
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(bootsplash-manager-gui
         src/bootsplash-manager-gui.cpp
@@ -37,6 +31,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/installdialog.h
         src/installdialog.ui
         images/icons.qrc
+        src/bootsplash-viewer.c
     )
 else()
     add_executable(bootsplash-manager-gui
@@ -48,8 +43,11 @@ else()
         src/installdialog.h
         src/installdialog.ui
         images/icons.qrc
+        src/bootsplash-viewer.c
     )
 endif()
 
-target_link_libraries(bootsplash-manager-gui PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(bootsplash-manager-gui PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${SDL2_LIBRARIES})
 target_link_libraries(bootsplash-manager Qt${QT_VERSION_MAJOR}::Core)
+
+target_include_directories(bootsplash-manager-gui PRIVATE ${SDL2_INCLUDE_DIRS} .)

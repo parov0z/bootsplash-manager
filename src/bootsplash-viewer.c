@@ -99,20 +99,16 @@ void render() {
 	SDL_RenderPresent(renderer);
 }
 
-int main(int argc, char** argv) {
-	if (argc < 2) {
-		fprintf(stderr, "Usage: %s <theme-file>\n", argv[0]);
-		exit(1);
-	}
+int bootsplashViewer( const char* arg ) {
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
 		fprintf(stderr, "Could not init SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
 
-	FILE* splash_file = fopen(argv[1], "r");
+    FILE* splash_file = fopen(arg, "r");
 	if (!splash_file) {
-		perror(argv[1]);
+        perror(arg);
 	}
 
 	size_t read = fread(&header, sizeof(FileHeader), 1, splash_file);
@@ -221,18 +217,14 @@ int main(int argc, char** argv) {
 		render();
 
 		while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT || e.type == SDL_KEYDOWN ) {
-				running = false;
-	 		} else if (e.type == SDL_KEYDOWN) {
-				if (e.key.keysym.sym == SDLK_f) {
-					int fs = SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP;
-					SDL_SetWindowFullscreen(window, fs ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-				}
-			}
+            if ( e.type == SDL_QUIT     ||
+                 e.type == SDL_KEYDOWN  ||
+                 e.type == SDL_MOUSEBUTTONDOWN ) running = false;
+
 		}
 
 		usleep(header.frame_ms * 1000);
-	}
-
+    }
+    SDL_DestroyWindow(window);
 	return 0;
 }
