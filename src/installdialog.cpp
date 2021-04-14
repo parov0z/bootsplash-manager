@@ -7,10 +7,10 @@
 void InstallDialog::refresh(){
     QStringList themes, installed;
 
-    ui->verticalLayout->setEnabled( false );
+    ui->verticalLayout -> setEnabled( false );
     QApplication::setOverrideCursor( Qt::WaitCursor );
 
-    ui->listWidget->clear();
+    ui->listWidget -> clear();
 
     QProcess search;
     search.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
@@ -43,13 +43,13 @@ void InstallDialog::refresh(){
                                      ":/icons/manjaro.svg"
                                     :":/icons/theme.svg" ),
                              QString( s ).remove( 0, 17 ),
-                             ui->listWidget );
+                             ui->listWidget                );
 
     }
 
     QApplication::restoreOverrideCursor();
-    ui->verticalLayout->setEnabled( true );
-    ui->pushButton->setEnabled( false );
+    ui->verticalLayout -> setEnabled(  true );
+    ui->pushButton     -> setEnabled( false );
 }
 
 InstallDialog::InstallDialog( QWidget *parent ) :
@@ -68,20 +68,21 @@ InstallDialog::~InstallDialog()
 void InstallDialog::on_listWidget_itemSelectionChanged()
 {
     if ( ui->listWidget->selectedItems().size() != 0 )
-        ui->pushButton->setEnabled( true );
-    else ui->pushButton->setEnabled( false );
+        ui->pushButton -> setEnabled(  true );
+    else
+        ui->pushButton -> setEnabled( false );
 }
 
 void InstallDialog::on_pushButton_clicked()
 {
-    ui->verticalLayout->setEnabled( false );
+    ui->verticalLayout -> setEnabled( false );
     QApplication::setOverrideCursor( Qt::WaitCursor );
 
     QStringList toInstall;
 
     const QList<QListWidgetItem* > l = ui->listWidget->selectedItems();
     for ( QListWidgetItem *i : l )
-        toInstall.append("bootsplash-theme-"+i->text());
+        toInstall.append( "bootsplash-theme-"+i->text() );
 
     QProcess install;
     install.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
@@ -90,7 +91,7 @@ void InstallDialog::on_pushButton_clicked()
     install.setArguments( QStringList() << "install"
                                         << "--no-confirm"
                                         << "--no-upgrade"
-                                        << toInstall );
+                                        << toInstall     );
 
 
     install.start();
@@ -99,7 +100,7 @@ void InstallDialog::on_pushButton_clicked()
     refresh();
 
     QApplication::restoreOverrideCursor();
-    ui->verticalLayout->setEnabled( true );
+    ui->verticalLayout -> setEnabled(  true );
 }
 
 

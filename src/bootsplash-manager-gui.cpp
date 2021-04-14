@@ -12,13 +12,13 @@ int main(int argc, char *argv[])
     QProcess readconf;
     readconf.start( "zgrep", QStringList() << "CONFIG_BOOTSPLASH" << "/proc/config.gz" );
     readconf.waitForFinished();
-    if( QString(readconf.readAllStandardOutput() ) != "CONFIG_BOOTSPLASH=y\n" ){
+    if( QString( readconf.readAllStandardOutput() ) != "CONFIG_BOOTSPLASH=y\n" ){
         QMessageBox m;
-        m.setWindowTitle("Warning");
-        m.setText("Cannot detect kernel bootsplash support\n"
-                  "Is it a custom kernel?\n"
-                  "Themes will not work, but you can still enable/disable the displaying of the boot log");
-        m.setIcon(QMessageBox::Warning);
+        m.setWindowTitle( "Warning" );
+        m.setText( "Cannot detect kernel bootsplash support\n"
+                   "Is it a custom kernel?\n"
+                   "Themes will not work, but you can still enable/disable the displaying of the boot log" );
+        m.setIcon( QMessageBox::Warning );
         m.exec();
     }
     readconf.close();

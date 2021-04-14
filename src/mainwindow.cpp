@@ -19,7 +19,7 @@ void MainWindow::refresh(){
     d.setFilter( QDir::NoDotAndDotDot | QDir::Dirs );
     if ( !d.exists() || d.count() == 0 ){
         QMessageBox m;
-        m.setText("No installed themes detected");
+        m.setText( "No installed themes detected" );
         m.setIcon( QMessageBox::Information );
         m.exec();
     }
@@ -32,7 +32,8 @@ void MainWindow::refresh(){
     QFile grub( "/etc/default/grub" );
     grub.open( QFile::ReadOnly | QFile::Text );
     QString cmdline;
-    while ( !cmdline.contains( QRegularExpression("^GRUB_CMDLINE_LINUX_DEFAULT=") ) )cmdline = grub.readLine();
+    while ( !cmdline.contains( QRegularExpression("^GRUB_CMDLINE_LINUX_DEFAULT=") ) )
+        cmdline = grub.readLine();
 
     QStringList cmdlineList = cmdline.replace( QRegularExpression("^GRUB_CMDLINE_LINUX_DEFAULT="), "" )
                                      .replace( "\"", "" )
@@ -58,22 +59,23 @@ void MainWindow::refresh(){
     }
     ui->listWidget->clear();
 
-    new QListWidgetItem(QIcon(":/icons/black.svg"),
-                        "black screen",
-                        ui->listWidget);
-    new QListWidgetItem(QIcon(":/icons/log.svg"),
-                        "boot log",
-                        ui->listWidget);
+    new QListWidgetItem( QIcon(":/icons/black.svg"),
+                         "black screen",
+                         ui->listWidget            );
+    new QListWidgetItem( QIcon(":/icons/log.svg"),
+                         "boot log",
+                         ui->listWidget            );
 
     int position = 0;
     if ( CurrentTheme == "boot log" ) position = 1;
     for ( int i = 0; i<themes.size(); i++ ){
-        if ( themes.at( i ) == CurrentTheme ) position = i+2;
-        new QListWidgetItem( QIcon(themes.at( i ).contains("manjaro")?
-                                     ":/icons/manjaro.svg"
-                                    :":/icons/theme.svg"),
+        if ( themes.at( i ) == CurrentTheme )
+            position = i+2;
+        new QListWidgetItem( QIcon( themes.at( i ).contains("manjaro")?
+                                                ":/icons/manjaro.svg"
+                                               :":/icons/theme.svg"  ),
                              themes[i],
-                             ui->listWidget );
+                             ui->listWidget                             );
 
     }
 
@@ -109,11 +111,11 @@ void MainWindow::on_listWidget_currentItemChanged()
         }
 
         if ( ui->listWidget->currentItem()->text() == CurrentTheme ){
-            ui->ApplyButton ->setEnabled( false );
-            ui->RemoveButton->setEnabled( false );
+            ui->ApplyButton   -> setEnabled( false );
+            ui->RemoveButton  -> setEnabled( false );
         }
         else
-            ui->ApplyButton->setEnabled(  true );
+            ui->ApplyButton   -> setEnabled(  true );
 
     }
 }
@@ -123,16 +125,22 @@ void MainWindow::on_ApplyButton_clicked()
     pkexec.setProgram( "pkexec" );
 
     if ( ui->listWidget->currentRow() == 0 )
-        pkexec.setArguments( QStringList() << "bootsplash-manager" << "-d" );
+        pkexec.setArguments( QStringList() << "bootsplash-manager"
+                                           << "-d"                  );
+
     else if ( ui->listWidget->currentRow() == 1 )
-        pkexec.setArguments( QStringList() << "bootsplash-manager" << "--set-log" );
+        pkexec.setArguments( QStringList() << "bootsplash-manager"
+                                           << "--set-log"           );
+
     else{
         QString theme = ui->listWidget->currentItem()->text();
-        pkexec.setArguments( QStringList() << "bootsplash-manager" << "-s" << theme );
+        pkexec.setArguments( QStringList() << "bootsplash-manager"
+                                           << "-s"
+                                           << theme                 );
     }
 
-    ui->ApplyButton->setEnabled( false );
-    ui->centralwidget->setEnabled( false );
+    ui->ApplyButton   -> setEnabled( false );
+    ui->centralwidget -> setEnabled( false );
     QApplication::setOverrideCursor( Qt::WaitCursor );
     pkexec.start();
 
@@ -140,7 +148,7 @@ void MainWindow::on_ApplyButton_clicked()
     pkexec.waitForFinished( -1 );
     QApplication::restoreOverrideCursor();
     refresh();
-    ui->centralwidget->setEnabled(true);
+    ui->centralwidget -> setEnabled(  true );
 }
 
 void MainWindow::on_InstallButton_clicked()
@@ -163,7 +171,7 @@ void MainWindow::on_RemoveButton_clicked()
                                         << "--aur"
                                         << "/usr/lib/firmware/bootsplash-themes/"+theme+"/" );
 
-    ui->centralwidget->setEnabled( false );
+    ui->centralwidget -> setEnabled( false );
     QApplication::setOverrideCursor( Qt::WaitCursor );
     pkgname.start();
 
@@ -171,10 +179,11 @@ void MainWindow::on_RemoveButton_clicked()
     QApplication::restoreOverrideCursor();
 
     QString result = QString( pkgname.readAll() );
-    // possible pamac output
-    // /usr/lib/firmware/bootsplash-themes/manjaro/bootsplash is owned by bootsplash-theme-manjaro
-    // No package owns /usr/lib/firmware/bootsplash-themes/what
-
+    /*
+      possible pamac output
+        > /usr/lib/firmware/bootsplash-themes/manjaro/bootsplash is owned by bootsplash-theme-manjaro
+        > No package owns /usr/lib/firmware/bootsplash-themes/what
+    */
     if ( result.contains( "No package owns" ) ){
         QMessageBox b;
         b.setWindowTitle( "Warning" );
@@ -197,7 +206,7 @@ void MainWindow::on_RemoveButton_clicked()
             remove.setProgram( "pamac" );
             remove.setArguments( QStringList() << "remove"
                                                << "--no-confirm"
-                                               << result );
+                                               << result        );
             remove.start();
             QApplication::setOverrideCursor( Qt::WaitCursor );
             remove.waitForFinished( -1 );
@@ -206,7 +215,7 @@ void MainWindow::on_RemoveButton_clicked()
     }
 
     refresh();
-    ui->centralwidget->setEnabled(true);
+    ui->centralwidget -> setEnabled(  true );
 }
 
 void MainWindow::on_previewButton_clicked()
