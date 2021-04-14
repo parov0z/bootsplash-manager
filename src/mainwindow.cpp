@@ -6,9 +6,6 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QProcess>
-#include <QProgressDialog>
-
-#include <QTextStream>
 
 extern "C" int bootsplashViewer( const char* arg );
 
@@ -198,9 +195,12 @@ void MainWindow::on_RemoveButton_clicked()
 
         QMessageBox b;
         b.setText( "Do you really want to remove "+result+"?" );
+        b.setIcon( QMessageBox::Question );
         b.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
 
         if ( b.exec() == 0x00004000 ){
+
+
             QProcess remove;
             remove.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
             remove.setProgram( "pamac" );

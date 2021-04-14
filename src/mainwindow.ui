@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>400</height>
+    <height>424</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -126,7 +126,8 @@
          <string notr="true"/>
         </property>
         <property name="icon">
-         <iconset theme="media-playback-start-symbolic"/>
+         <iconset theme="media-playback-start-symbolic">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -145,7 +146,8 @@
          <string>Apply</string>
         </property>
         <property name="icon">
-         <iconset theme="dialog-ok"/>
+         <iconset theme="dialog-ok">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>

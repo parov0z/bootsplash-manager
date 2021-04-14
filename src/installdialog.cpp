@@ -2,7 +2,7 @@
 #include "ui_installdialog.h"
 
 #include <QProcess>
-#include <QProgressBar>
+#include <QMessageBox>
 
 void InstallDialog::refresh(){
     QStringList themes, installed;
@@ -75,32 +75,39 @@ void InstallDialog::on_listWidget_itemSelectionChanged()
 
 void InstallDialog::on_pushButton_clicked()
 {
-    ui->verticalLayout -> setEnabled( false );
-    QApplication::setOverrideCursor( Qt::WaitCursor );
-
+    const QList<QListWidgetItem* > l = ui->listWidget->selectedItems();
     QStringList toInstall;
 
-    const QList<QListWidgetItem* > l = ui->listWidget->selectedItems();
     for ( QListWidgetItem *i : l )
         toInstall.append( "bootsplash-theme-"+i->text() );
 
-    QProcess install;
-    install.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
-    install.setProgram( "pamac" );
+    QMessageBox b;
+    b.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+    b.setIcon( QMessageBox::Question );
+    b.setText( "To install: " + QString::number( toInstall.size() )+ " themes \nContinue?"  );
 
-    install.setArguments( QStringList() << "install"
-                                        << "--no-confirm"
-                                        << "--no-upgrade"
-                                        << toInstall     );
+    if( b.exec() == 0x00004000 ){
 
+        ui->verticalLayout -> setEnabled( false );
+        QApplication::setOverrideCursor( Qt::WaitCursor );
 
-    install.start();
-    install.waitForFinished( -1 );
+        QProcess install;
+        install.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
+        install.setProgram( "pamac" );
 
-    refresh();
+        install.setArguments( QStringList() << "install"
+                                            << "--no-confirm"
+                                            << "--no-upgrade"
+                                            << toInstall     );
 
-    QApplication::restoreOverrideCursor();
-    ui->verticalLayout -> setEnabled(  true );
+        install.start();
+        install.waitForFinished( -1 );
+        refresh();
+
+        QApplication::restoreOverrideCursor();
+        ui->verticalLayout -> setEnabled(  true );
+
+    }
 }
 
 
