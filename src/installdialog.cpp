@@ -58,6 +58,7 @@ InstallDialog::InstallDialog( QWidget *parent ) :
     ui( new Ui::InstallDialog )
 {
     ui->setupUi( this );
+    setWindowFlags( windowFlags() & (~Qt::WindowContextHelpButtonHint) );
     refresh();
 }
 
