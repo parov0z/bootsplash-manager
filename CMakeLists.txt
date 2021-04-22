@@ -31,6 +31,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/installdialog.h
         src/installdialog.ui
         images/icons.qrc
+        src/bootsplash_file.h
         src/bootsplash-viewer.c
     )
 else()
@@ -43,6 +44,7 @@ else()
         src/installdialog.h
         src/installdialog.ui
         images/icons.qrc
+        src/bootsplash_file.h
         src/bootsplash-viewer.c
     )
 endif()

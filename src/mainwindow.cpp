@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QProcess>
+#include <QProgressDialog>
 
 extern "C" int bootsplashViewer( const char* arg );
 
@@ -77,6 +78,7 @@ void MainWindow::refresh(){
     }
 
     ui->listWidget->setCurrentRow( position );
+
 }
 
 
@@ -118,34 +120,35 @@ void MainWindow::on_listWidget_currentItemChanged()
 }
 void MainWindow::on_ApplyButton_clicked()
 {
-    QProcess pkexec;
-    pkexec.setProgram( "pkexec" );
+    QProcess *pkexec = new QProcess;
+    pkexec->setProgram( "pkexec" );
 
     if ( ui->listWidget->currentRow() == 0 )
-        pkexec.setArguments( QStringList() << "bootsplash-manager"
+        pkexec->setArguments( QStringList() << "bootsplash-manager"
                                            << "-d"                  );
 
     else if ( ui->listWidget->currentRow() == 1 )
-        pkexec.setArguments( QStringList() << "bootsplash-manager"
+        pkexec->setArguments( QStringList() << "bootsplash-manager"
                                            << "--set-log"           );
 
     else{
         QString theme = ui->listWidget->currentItem()->text();
-        pkexec.setArguments( QStringList() << "bootsplash-manager"
+        pkexec->setArguments( QStringList() << "bootsplash-manager"
                                            << "-s"
                                            << theme                 );
     }
 
-    ui->ApplyButton   -> setEnabled( false );
-    ui->centralwidget -> setEnabled( false );
-    QApplication::setOverrideCursor( Qt::WaitCursor );
-    pkexec.start();
+    QProgressDialog *d = new QProgressDialog("Please, wait...", nullptr, 0, 0, this);
+    d->setWindowModality(Qt::WindowModal);
+    d->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
 
+    d->open();
 
-    pkexec.waitForFinished( -1 );
-    QApplication::restoreOverrideCursor();
-    refresh();
-    ui->centralwidget -> setEnabled(  true );
+    pkexec->start();
+
+    connect( pkexec,
+             static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+             [=](){ d->close(); refresh(); }                     );
 }
 
 void MainWindow::on_InstallButton_clicked()
@@ -174,6 +177,7 @@ void MainWindow::on_RemoveButton_clicked()
 
     pkgname.waitForFinished( -1 );
     QApplication::restoreOverrideCursor();
+    ui->centralwidget -> setEnabled(  true );
 
     QString result = QString( pkgname.readAll() );
     /*
@@ -200,22 +204,28 @@ void MainWindow::on_RemoveButton_clicked()
 
         if ( b.exec() == 0x00004000 ){
 
+            QProcess *remove = new QProcess;
+            remove->setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
+            remove->setProgram( "pamac" );
+            remove->setArguments( QStringList() << "remove"
+                                                << "--no-confirm"
+                                                << result        );
 
-            QProcess remove;
-            remove.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
-            remove.setProgram( "pamac" );
-            remove.setArguments( QStringList() << "remove"
-                                               << "--no-confirm"
-                                               << result        );
-            remove.start();
-            QApplication::setOverrideCursor( Qt::WaitCursor );
-            remove.waitForFinished( -1 );
-            QApplication::restoreOverrideCursor();
+            QProgressDialog *d = new QProgressDialog("Please, wait...", nullptr, 0, 0, this);
+            d->setWindowModality(Qt::WindowModal);
+            d->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+
+            d->open();
+
+            remove->start();
+
+            connect( remove,
+                     static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                     [=](){ d->close(); refresh();}                     );
         }
     }
 
     refresh();
-    ui->centralwidget -> setEnabled(  true );
 }
 
 void MainWindow::on_previewButton_clicked()

@@ -3,6 +3,7 @@
 
 #include <QProcess>
 #include <QMessageBox>
+#include <QProgressDialog>
 
 void InstallDialog::refresh(){
     QStringList themes, installed;
@@ -88,24 +89,30 @@ void InstallDialog::on_pushButton_clicked()
 
     if( b.exec() == 0x00004000 ){
 
-        ui->verticalLayout -> setEnabled( false );
-        QApplication::setOverrideCursor( Qt::WaitCursor );
+        QProcess *install = new QProcess;
+        install->setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
+        install->setProgram( "pamac" );
 
-        QProcess install;
-        install.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
-        install.setProgram( "pamac" );
+        install->setArguments( QStringList() << "install"
+                                             << "--no-confirm"
+                                             << "--no-upgrade"
+                                             << toInstall     );
 
-        install.setArguments( QStringList() << "install"
-                                            << "--no-confirm"
-                                            << "--no-upgrade"
-                                            << toInstall     );
 
-        install.start();
-        install.waitForFinished( -1 );
-        refresh();
 
-        QApplication::restoreOverrideCursor();
-        ui->verticalLayout -> setEnabled(  true );
+
+        QProgressDialog *d = new QProgressDialog("Installing "+ QString::number( toInstall.size() ) + " themes\nThis may take a few minutes",
+                                                 nullptr, 0, 0, this);
+        d->setWindowModality( Qt::WindowModal );
+        d->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
+
+        d->open();
+
+        install->start();
+
+        connect( install,
+                 static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                 [=](){ d->close(); refresh(); }                     );
 
     }
 }
