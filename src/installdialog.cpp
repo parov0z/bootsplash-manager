@@ -18,7 +18,7 @@ void InstallDialog::refresh(){
     search.setProgram( "pamac" );
     // search all
     search.setArguments( QStringList() << "search"
-                                       << "-a"
+                                       << ( ui->checkBox->isChecked()? "-a":"--no-aur")
                                        << "-q"
                                        << "bootsplash-theme-" );
     search.start();
@@ -118,3 +118,8 @@ void InstallDialog::on_pushButton_clicked()
 }
 
 
+
+void InstallDialog::on_checkBox_stateChanged(int arg1)
+{
+    refresh();
+}
