@@ -71,10 +71,11 @@ void render() {
 		memcpy(pixels, &image->frames[image->cur_frame * image->geometry.w * image->geometry.h], image->geometry.w * image->geometry.h * 4);
 		SDL_UnlockTexture(image->texture);
 
-		image->cur_frame++;
-		if (image->cur_frame == image->num_frames)
-			image->cur_frame = image->anim_start;
-
+        if(image->animated){
+            image->cur_frame++;
+            if (image->cur_frame == image->num_frames)
+                image->cur_frame = image->anim_start;
+        }
 		SDL_Rect pos;
 		pos.w = image->geometry.w;
 		pos.h = image->geometry.h;
