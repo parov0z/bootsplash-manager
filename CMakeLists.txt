@@ -23,29 +23,29 @@ add_executable(bootsplash-manager
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(bootsplash-manager-gui
-        src/bootsplash-manager-gui.cpp
-        src/mainwindow.cpp
-        src/mainwindow.h
-        src/mainwindow.ui
-        src/installdialog.cpp
-        src/installdialog.h
-        src/installdialog.ui
+        src/gui/bootsplash-manager-gui.cpp
+        src/gui/mainwindow.cpp
+        src/gui/mainwindow.h
+        src/gui/mainwindow.ui
+        src/gui/installdialog.cpp
+        src/gui/installdialog.h
+        src/gui/installdialog.ui
         images/icons.qrc
-        src/bootsplash_file.h
-        src/bootsplash-viewer.c
+        src/gui/bootsplash_file.h
+        src/gui/bootsplash-viewer.c
     )
 else()
     add_executable(bootsplash-manager-gui
-        src/bootsplash-manager-gui.cpp
-        src/mainwindow.cpp
-        src/mainwindow.h
-        src/mainwindow.ui
-        src/installdialog.cpp
-        src/installdialog.h
-        src/installdialog.ui
+        src/gui/bootsplash-manager-gui.cpp
+        src/gui/mainwindow.cpp
+        src/gui/mainwindow.h
+        src/gui/mainwindow.ui
+        src/gui/installdialog.cpp
+        src/gui/installdialog.h
+        src/gui/installdialog.ui
         images/icons.qrc
-        src/bootsplash_file.h
-        src/bootsplash-viewer.c
+        src/gui/bootsplash_file.h
+        src/gui/bootsplash-viewer.c
     )
 endif()
 
