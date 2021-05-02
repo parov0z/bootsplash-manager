@@ -14,6 +14,7 @@ int setLog();
 int disable();
 int list();
 int status();
+int initcpioClear(); // removes all the themes from /etc/mkinitcpio.conf
 
 int main(int argc, char *argv[])
 {
@@ -127,11 +128,6 @@ int setTheme( const QString& theme ){
 
     // check initcpio
 
-    QDir d( "/usr/lib/firmware/bootsplash-themes/" );
-    d.setFilter( QDir::NoDotAndDotDot | QDir::Dirs );
-    if ( d.count() == 0 ) return -1;
-    QStringList themesList = d.entryList();
-
     QFile initcpio( "/etc/mkinitcpio.conf" );
     if ( !initcpio.open( QFile::ReadWrite | QFile::Text ) )
         return -1;
@@ -146,28 +142,22 @@ int setTheme( const QString& theme ){
     hooks.replace( QRegularExpression("^HOOKS="), "" );
     if ( bracketsFlag ) hooks.replace( '(', "" )
                              .replace( ')', "" );
-    else                hooks.replace( '"', "" );
+    else                hooks.replace( '"', "" );    
 
-    QStringList hooksList = hooks.split(' ');
-    bool hooksFlag = true;
-    for ( const QString& t : qAsConst(themesList) )
-        if ( !hooksList.contains( "bootsplash-"+t ) ){
-            hooksFlag = false;
-            break;
-        }
+    if ( !hooks.contains( "bootsplash-"+theme ) || hooks.count( QRegularExpression("bootsplash-") ) > 1 ){
+        QStringList hooksList = hooks.split(' ');
 
-    if ( !hooksFlag ){
         auto last_it = std::remove_if( hooksList.begin(),
                                        hooksList.end(),
                                        [](const QString& s){return s.contains("bootsplash-");} );
         hooksList.erase(last_it, hooksList.end());
 
-        for ( const QString& t : qAsConst(themesList) )
-            hooksList.append( "bootsplash-"+t );
+        hooksList.append( "bootsplash-"+theme );
+
         hooks.clear();
-        hooks=bracketsFlag?"HOOKS=(":"HOOKS=\"";
-        hooks+=hooksList.join(' ');
-        hooks+=bracketsFlag?")":"\"";
+        hooks  = bracketsFlag?"HOOKS=(":"HOOKS=\"";
+        hooks += hooksList.join(' ');
+        hooks += bracketsFlag?")":"\"";
         data.replace( position, hooks );
 
         // write initcpio
@@ -239,7 +229,8 @@ int setLog(){
     out << "updating GRUB...\n\n";
     out.flush();
     QProcess::execute( "grub-mkconfig", { "-o", "/boot/grub/grub.cfg" } );
-    return 0;
+
+    return initcpioClear();
 
 }
 int disable(){
@@ -294,7 +285,8 @@ int disable(){
     out << "updating GRUB...\n\n";
     out.flush();
     QProcess::execute( "grub-mkconfig", { "-o", "/boot/grub/grub.cfg" } );
-    return 0;
+
+    return initcpioClear();
 }
 int list(){
     QTextStream out( stdout );
@@ -369,3 +361,54 @@ int status(){
     return 0;
 }
 
+int initcpioClear(){
+    QTextStream out(stdout);
+
+    QFile initcpio( "/etc/mkinitcpio.conf" );
+    if ( !initcpio.open( QFile::ReadWrite | QFile::Text ) )
+        return -1;
+    QStringList data = QString( initcpio.readAll() ).split("\n");
+
+    QString hooks;
+    int position = data.indexOf( QRegularExpression("^HOOKS=.*") );
+    hooks = data.at( position );
+
+    if( hooks.contains( "bootsplash-" ) ){
+
+        bool bracketsFlag = hooks.contains( QRegularExpression("^HOOKS=[(].*") );
+
+        hooks.replace( QRegularExpression("^HOOKS="), "" );
+        if ( bracketsFlag ) hooks.replace( '(', "" )
+                                 .replace( ')', "" );
+        else                hooks.replace( '"', "" );
+
+        QStringList hooksList = hooks.split(' ');
+
+        auto last_it = std::remove_if( hooksList.begin(),
+                                       hooksList.end(),
+                                       [](const QString& s){return s.contains("bootsplash-");} );
+        hooksList.erase(last_it, hooksList.end());
+
+        hooks.clear();
+        hooks  = bracketsFlag?"HOOKS=(":"HOOKS=\"";
+        hooks += hooksList.join(' ');
+        hooks += bracketsFlag?")":"\"";
+        data.replace( position, hooks );
+
+        // write initcpio
+        out << "Writing initcpio...\nbackup will be saved to /etc/mkinitcpio.conf.bak\n\n";
+        out.flush();
+
+        QFile::copy( "/etc/mkinitcpio.conf", "/etc/mkinitcpio.conf.bak" );
+
+        initcpio.resize( 0 );
+        for ( const QString& s : qAsConst(data) ) initcpio.write( ( s + '\n' ).toUtf8() );
+
+        out << "\n\nupdating initcpio...\n\n";
+        out.flush();
+
+    }
+
+    initcpio.close();
+    return 0;
+}
