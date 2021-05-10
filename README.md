@@ -1,7 +1,7 @@
 # bootsplash-manager
 Simple bootsplash manager for Manjaro
 <p align="center">
-   <img src="https://raw.githubusercontent.com/ANDRoid7890/bootsplash-manager/master/images/bootsplash-manager-gui.svg"/>
+   <img src="https://raw.githubusercontent.com/ANDRoid7890/bootsplash-manager/master/images/sc-apps-bootsplash-manager-gui.svg"/>
 </p>
 
 ## Features
@@ -50,6 +50,9 @@ cd bootsplash-manager
 cmake .
 make
 ```
+## Special thanks
+* [LordTermor](https://github.com/LordTermor) 
+
 ## TODO
 - [x] gui
 - [x] install/remove dialog
