@@ -17,7 +17,7 @@ public:
     void refresh();
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-private slots:
+private Q_SLOTS:
     void on_listWidget_currentItemChanged();
 
 

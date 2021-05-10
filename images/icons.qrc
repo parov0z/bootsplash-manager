@@ -5,6 +5,6 @@
         <file>log.svg</file>
         <file>manjaro.svg</file>
         <file>theme.svg</file>
-        <file>bootsplash-manager-gui.svg</file>
+        <file>sc-apps-bootsplash-manager-gui.svg</file>
     </qresource>
 </RCC>

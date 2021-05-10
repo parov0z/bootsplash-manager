@@ -1,9 +1,11 @@
 #include "installdialog.h"
 #include "ui_installdialog.h"
 
-#include <QProcess>
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <KAuth>
+#include "pamac.h"
+#include <gio/gio.h>
 
 void InstallDialog::refresh(){
     QStringList themes, installed;
@@ -13,29 +15,34 @@ void InstallDialog::refresh(){
 
     ui->listWidget -> clear();
 
-    QProcess search;
-    search.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
-    search.setProgram( "pamac" );
-    // search all
-    search.setArguments( QStringList() << "search"
-                                       << ( ui->checkBox->isChecked()? "-a":"--no-aur")
-                                       << "-q"
-                                       << "bootsplash-theme-" );
-    search.start();
-    search.waitForFinished( -1 );
+    PamacConfig *conf = pamac_config_new( "/etc/pamac.conf" );
+    PamacDatabase *database = pamac_database_new( conf );
 
-    themes = QString( search.readAll() ).split( '\n' );
-    // search installed
-    search.setArguments( QStringList() << "search"
-                                       << "-a"
-                                       << "-q"
-                                       << "-i"
-                                       << "bootsplash-theme-" );
-    search.start();
-    search.waitForFinished( -1 );
+    // repos search
+    GPtrArray *pkg = pamac_database_search_pkgs( database, "bootsplash-theme-" );
 
-    installed = QString( search.readAll() ).split( '\n' );
-    // remove installed
+    if( (int)pkg->len !=0 ){
+        for(int i = 0; i < (int)pkg->len; i++)
+             themes.append( pamac_package_get_name( (PamacPackage*)g_ptr_array_index(pkg, i) ) );
+    }
+    // AUR search
+    if( ui->checkBox->isChecked() ){
+        GPtrArray *aur = pamac_database_search_aur_pkgs( database, "bootsplash-theme-" );
+
+        if( (int)aur->len !=0 ){
+            for(int i = 0; i < (int)aur->len; i++)
+                 themes.append( pamac_aur_package_get_packagebase( (PamacAURPackage*)g_ptr_array_index(aur, i) ) );
+        }
+    }
+    // installed search
+    GPtrArray *inst = pamac_database_search_installed_pkgs( database, "bootsplash-theme-" );
+
+    if( (int)pkg->len !=0 ){
+        for(int i = 0; i < (int)inst->len; i++)
+             installed.append( pamac_package_get_name( (PamacPackage*)g_ptr_array_index(inst, i) ) );
+    }
+
+    // don't show installed
     for ( const QString& s : qAsConst( installed ) )
         themes.removeAll( s );
 
@@ -68,11 +75,8 @@ InstallDialog::~InstallDialog()
 }
 
 void InstallDialog::on_listWidget_itemSelectionChanged()
-{
-    if ( ui->listWidget->selectedItems().size() != 0 )
-        ui->pushButton -> setEnabled(  true );
-    else
-        ui->pushButton -> setEnabled( false );
+{    
+    ui->pushButton->setEnabled( ui->listWidget->selectedItems().size() != 0 );
 }
 
 void InstallDialog::on_pushButton_clicked()
@@ -90,31 +94,24 @@ void InstallDialog::on_pushButton_clicked()
 
     if( b.exec() == 0x00004000 ){
 
-        QProcess *install = new QProcess;
-        install->setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
-        install->setProgram( "pamac" );
-
-        install->setArguments( QStringList() << "install"
-                                             << "--no-confirm"
-                                             << "--no-upgrade"
-                                             << toInstall     );
-
-
-
+        QVariantMap args;
+        args["toInstall"] = QVariant( toInstall );
+        KAuth::Action installAction("dev.android7890.bootsplashmanager.install");
+        installAction.setHelperId("dev.android7890.bootsplashmanager");
+        installAction.setArguments( args );
+        installAction.setTimeout( 300000 );
+        KAuth::ExecuteJob *job = installAction.execute();
 
         QProgressDialog *d = new QProgressDialog("Installing "+ QString::number( toInstall.size() ) + " themes\nThis may take a few minutes",
                                                  nullptr, 0, 0, this);
         d->setWindowModality( Qt::WindowModal );
         d->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
 
+        connect( job,
+                 &KAuth::ExecuteJob::finished,
+                 [=](){ d->close(); refresh(); }     );
+        job->start();
         d->open();
-
-        install->start();
-
-        connect( install,
-                 static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                 [=](){ d->close(); refresh(); }                     );
-
     }
 }
 
@@ -122,5 +119,6 @@ void InstallDialog::on_pushButton_clicked()
 
 void InstallDialog::on_checkBox_stateChanged(int arg1)
 {
+    Q_UNUSED(arg1);
     refresh();
 }

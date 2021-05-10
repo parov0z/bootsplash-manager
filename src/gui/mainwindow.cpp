@@ -5,8 +5,10 @@
 #include <QListWidget>
 #include <QDir>
 #include <QMessageBox>
-#include <QProcess>
 #include <QProgressDialog>
+#include <KAuth>
+#include "pamac.h"
+#include <gio/gio.h>
 
 extern "C" int bootsplashViewer( const char* arg );
 
@@ -120,35 +122,23 @@ void MainWindow::on_listWidget_currentItemChanged()
 }
 void MainWindow::on_ApplyButton_clicked()
 {
-    QProcess *pkexec = new QProcess;
-    pkexec->setProgram( "pkexec" );
+    QVariantMap args;
+    args["theme"] = QVariant( ui->listWidget->currentItem()->text() );
+    KAuth::Action changeAction("dev.android7890.bootsplashmanager.changetheme");
+    changeAction.setHelperId("dev.android7890.bootsplashmanager");
+    changeAction.setArguments( args );
+    changeAction.setTimeout( 180000 );
+    KAuth::ExecuteJob *job = changeAction.execute();
 
-    if ( ui->listWidget->currentRow() == 0 )
-        pkexec->setArguments( QStringList() << "bootsplash-manager"
-                                           << "-d"                  );
+    QProgressDialog *d = new QProgressDialog( "Please, wait...", nullptr, 0, 0, this );
+    d->setWindowModality( Qt::WindowModal );
+    d->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
 
-    else if ( ui->listWidget->currentRow() == 1 )
-        pkexec->setArguments( QStringList() << "bootsplash-manager"
-                                           << "--set-log"           );
-
-    else{
-        QString theme = ui->listWidget->currentItem()->text();
-        pkexec->setArguments( QStringList() << "bootsplash-manager"
-                                           << "-s"
-                                           << theme                 );
-    }
-
-    QProgressDialog *d = new QProgressDialog("Please, wait...", nullptr, 0, 0, this);
-    d->setWindowModality(Qt::WindowModal);
-    d->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-
+    connect( job,
+             &KAuth::ExecuteJob::finished,
+             [=](){ d->close(); refresh(); }     );
+    job->start();
     d->open();
-
-    pkexec->start();
-
-    connect( pkexec,
-             static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-             [=](){ d->close(); refresh(); }                     );
 }
 
 void MainWindow::on_InstallButton_clicked()
@@ -160,69 +150,61 @@ void MainWindow::on_InstallButton_clicked()
 
 void MainWindow::on_RemoveButton_clicked()
 {
-    QProcess pkgname;
-    pkgname.setProgram( "pamac" );
-    pkgname.setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
-
-    QString theme = ui->listWidget->currentItem()->text();
-    pkgname.setArguments( QStringList() << "search"
-                                        << "--installed"
-                                        << "--files"
-                                        << "--aur"
-                                        << "/usr/lib/firmware/bootsplash-themes/"+theme+"/" );
-
     ui->centralwidget -> setEnabled( false );
     QApplication::setOverrideCursor( Qt::WaitCursor );
-    pkgname.start();
 
-    pkgname.waitForFinished( -1 );
+
+    PamacConfig *conf = pamac_config_new( "/etc/pamac.conf" );
+    PamacDatabase *database = pamac_database_new( conf );
+
+    QByteArray file = ("/usr/lib/firmware/bootsplash-themes/" + ui->listWidget->currentItem()->text() + "/bootsplash").toUtf8();
+    std::vector<char> data(file.begin(), file.end());
+    char* f = data.data();
+
+    GHashTable *pkg = pamac_database_search_files( database, &f, 1 );
+
+    QString result;
+
+    GHashTableIter iter;
+    gpointer pkgname, filelist;
+
+    g_hash_table_iter_init (&iter, pkg);
+    while (g_hash_table_iter_next (&iter, &pkgname, &filelist))
+    {
+        if( (int)( pamac_database_search_installed_pkgs( database, (char*)pkgname )->len ) != 0 )
+            result = (char*)pkgname;
+    }
+
+
     QApplication::restoreOverrideCursor();
     ui->centralwidget -> setEnabled(  true );
 
-    QString result = QString( pkgname.readAll() );
-    /*
-      possible pamac output
-        > /usr/lib/firmware/bootsplash-themes/manjaro/bootsplash is owned by bootsplash-theme-manjaro
-        > No package owns /usr/lib/firmware/bootsplash-themes/what
-    */
-    if ( result.contains( "No package owns" ) ){
-        QMessageBox b;
-        b.setWindowTitle( "Warning" );
-        b.setIcon( QMessageBox::Critical );
-        b.setText( "Can't find that package\n"
-                   "Are you sure that theme was installed via package manager?" );
-        b.exec();
-    }
-    else{
-        result.remove( QRegularExpression("^.* is owned by ") )
-              .remove( "\n" );
+    QMessageBox b;
+    b.setText( "Do you really want to remove " + result + "?" );
+    b.setIcon( QMessageBox::Question );
+    b.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
 
-        QMessageBox b;
-        b.setText( "Do you really want to remove "+result+"?" );
-        b.setIcon( QMessageBox::Question );
-        b.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
+    if ( b.exec() == 0x00004000 ){
 
-        if ( b.exec() == 0x00004000 ){
+        QVariantMap args;
+        args["theme"] = QVariant( result );
+        KAuth::Action removeAction("dev.android7890.bootsplashmanager.remove");
+        removeAction.setHelperId("dev.android7890.bootsplashmanager");
+        removeAction.setArguments( args );
+        removeAction.setTimeout( 180000 );
+        KAuth::ExecuteJob *job = removeAction.execute();
 
-            QProcess *remove = new QProcess;
-            remove->setEnvironment( QStringList("LANG=\"en_AU.UTF-8\"") );
-            remove->setProgram( "pamac" );
-            remove->setArguments( QStringList() << "remove"
-                                                << "--no-confirm"
-                                                << result        );
+        QProgressDialog *d = new QProgressDialog( "Please, wait...", nullptr, 0, 0, this );
+        d->setWindowModality( Qt::WindowModal );
+        d->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
 
-            QProgressDialog *d = new QProgressDialog("Please, wait...", nullptr, 0, 0, this);
-            d->setWindowModality(Qt::WindowModal);
-            d->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+        connect( job,
+                 &KAuth::ExecuteJob::finished,
+                 [=](){ d->close(); refresh(); }     );
+        job->start();
+        d->open();
 
-            d->open();
 
-            remove->start();
-
-            connect( remove,
-                     static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                     [=](){ d->close(); refresh();}                     );
-        }
     }
 
     refresh();

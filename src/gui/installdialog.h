@@ -16,7 +16,7 @@ public:
     explicit InstallDialog(QWidget *parent = nullptr);
     ~InstallDialog();
 
-private slots:
+private Q_SLOTS:
     void on_pushButton_clicked();
 
     void on_listWidget_itemSelectionChanged();

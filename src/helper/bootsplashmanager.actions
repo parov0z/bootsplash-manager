@@ -1,0 +1,25 @@
+[Domain]
+Name=bootsplash-manager
+Icon=bootsplash-manager-gui
+URL=https://github.com/ANDRoid7890/bootsplash-manager
+
+[dev.android7890.bootsplashmanager.changetheme]
+Name=Change theme
+Description=Authentication is required to change bootsplash theme
+Description[ru]=Требуется авторизация для смены загрузочной анимации
+Policy=auth_admin
+Persistence=session 
+
+[dev.android7890.bootsplashmanager.remove]
+Name=remove theme
+Description=Authentication is required to remove a theme
+Description[ru]=Требуется авторизация для удаления темы
+Policy=auth_admin
+Persistence=session
+
+[dev.android7890.bootsplashmanager.install]
+Name=Install themes
+Description=Authentication is required to install themes
+Description[ru]=Требуется авторизация для установки тем
+Policy=auth_admin
+Persistence=session
