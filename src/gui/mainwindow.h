@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QAbstractButton>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,14 +21,13 @@ public:
 private Q_SLOTS:
     void on_listWidget_currentItemChanged();
 
-
-    void on_ApplyButton_clicked();
-
     void on_InstallButton_clicked();
 
     void on_RemoveButton_clicked();
 
     void on_previewButton_clicked();
+
+    void on_buttonBox_clicked(QAbstractButton *button);
 
 private:
     Ui::MainWindow *ui;

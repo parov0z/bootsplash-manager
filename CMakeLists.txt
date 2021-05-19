@@ -11,9 +11,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
 find_package(KF5Auth REQUIRED)
+find_package(fmt REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
@@ -26,33 +26,25 @@ add_executable(${PROJECT_NAME}
     src/root-actions.cpp
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(${PROJECT_NAME}-gui
-        src/gui/bootsplash-manager-gui.cpp
-        src/gui/mainwindow.cpp
-        src/gui/mainwindow.h
-        src/gui/mainwindow.ui
-        src/gui/installdialog.cpp
-        src/gui/installdialog.h
-        src/gui/installdialog.ui
-        images/icons.qrc
-        src/gui/bootsplash_file.h
-        src/gui/bootsplash-viewer.c
-    )
-else()
-    add_executable(${PROJECT_NAME}-gui
-        src/gui/bootsplash-manager-gui.cpp
-        src/gui/mainwindow.cpp
-        src/gui/mainwindow.h
-        src/gui/mainwindow.ui
-        src/gui/installdialog.cpp
-        src/gui/installdialog.h
-        src/gui/installdialog.ui
-        images/icons.qrc
-        src/gui/bootsplash_file.h
-        src/gui/bootsplash-viewer.c
-    )
-endif()
+set(TS_FILES
+    data/translations/${PROJECT_NAME}_ru_RU.ts
+)
+
+qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+
+add_executable(${PROJECT_NAME}-gui
+    ${QM_FILES}
+    src/gui/bootsplash-manager-gui.cpp
+    src/gui/mainwindow.cpp
+    src/gui/mainwindow.h
+    src/gui/mainwindow.ui
+    src/gui/installdialog.cpp
+    src/gui/installdialog.h
+    src/gui/installdialog.ui
+    images/icons.qrc
+    src/gui/bootsplash_file.h
+    src/gui/bootsplash-viewer.c
+)
 
 add_executable(${PROJECT_NAME}-gui-helper
     src/helper/helper.cpp
@@ -83,6 +75,7 @@ install(TARGETS ${PROJECT_NAME}             DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(TARGETS ${PROJECT_NAME}-gui         DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(TARGETS ${PROJECT_NAME}-gui-helper  DESTINATION ${KAUTH_HELPER_INSTALL_DIR})
 
+install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/translations)
 install(FILES data/bootsplash-manager.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 ecm_install_icons(ICONS images/sc-apps-bootsplash-manager-gui.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons)
 

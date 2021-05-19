@@ -138,12 +138,13 @@ int rootActions::setTheme( const QString& theme ){
 
         bool bracketsFlag = hooks.contains( QRegularExpression("^HOOKS=[(].*") );
 
-        hooks.replace( QRegularExpression("^HOOKS="), "" );
-        if ( bracketsFlag ) hooks.replace( '(', "" )
-                                 .replace( ')', "" );
-        else                hooks.replace( '"', "" );
+        if ( !hooks.contains( QRegularExpression(".bootsplash-"+theme+".") ) || hooks.count( QRegularExpression("bootsplash-") ) > 1 ){
 
-        if ( !hooks.contains( "bootsplash-"+theme ) || hooks.count( QRegularExpression("bootsplash-") ) > 1 ){
+            hooks.replace( QRegularExpression("^HOOKS="), "" );
+            if ( bracketsFlag ) hooks.replace( '(', "" )
+                                     .replace( ')', "" );
+            else                hooks.replace( '"', "" );
+
             QStringList hooksList = hooks.split(' ');
 
             auto last_it = std::remove_if( hooksList.begin(),

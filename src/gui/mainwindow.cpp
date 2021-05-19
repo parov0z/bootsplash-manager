@@ -40,9 +40,6 @@ void MainWindow::refresh(){
                                      .split( ' ' );
     bool bootfileFlag = false;
 
-                             // Don't know why, but when it's last item of QStringList, it has \n at the end
-                             // Don't remember having this problem in cli (bootsplash-manager.cpp), I tested it multiple times, but added same fix it there too as a precaution
-                             //               \/
     if ( cmdlineList.indexOf( QRegExp("quiet($|\n)") ) != -1 ) CurrentTheme = "black screen";
     else {
         for ( const QString& opt : qAsConst(cmdlineList) ){
@@ -112,16 +109,18 @@ void MainWindow::on_listWidget_currentItemChanged()
         }
 
         if ( ui->listWidget->currentItem()->text() == CurrentTheme ){
-            ui->ApplyButton   -> setEnabled( false );
+            ui->buttonBox     -> setEnabled( false );
             ui->RemoveButton  -> setEnabled( false );
         }
         else
-            ui->ApplyButton   -> setEnabled(  true );
+            ui->buttonBox     -> setEnabled(  true );
 
     }
 }
-void MainWindow::on_ApplyButton_clicked()
+void MainWindow::on_buttonBox_clicked(QAbstractButton *button)
 {
+    Q_UNUSED(button);
+
     QVariantMap args;
     args["theme"] = QVariant( ui->listWidget->currentItem()->text() );
     KAuth::Action changeAction("dev.android7890.bootsplashmanager.changetheme");
@@ -130,12 +129,13 @@ void MainWindow::on_ApplyButton_clicked()
     changeAction.setTimeout( 180000 );
     KAuth::ExecuteJob *job = changeAction.execute();
 
-    QProgressDialog *d = new QProgressDialog( "Please, wait...", nullptr, 0, 0, this );
+    QProgressDialog *d = new QProgressDialog( tr("Please, wait..."), nullptr, 0, 0, this );
     d->setWindowModality( Qt::WindowModal );
     d->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
 
     connect( job,
              &KAuth::ExecuteJob::finished,
+             this,
              [=](){ d->close(); refresh(); }     );
     job->start();
     d->open();
@@ -157,11 +157,11 @@ void MainWindow::on_RemoveButton_clicked()
     PamacConfig *conf = pamac_config_new( "/etc/pamac.conf" );
     PamacDatabase *database = pamac_database_new( conf );
 
-    QByteArray file = ("/usr/lib/firmware/bootsplash-themes/" + ui->listWidget->currentItem()->text() + "/bootsplash").toUtf8();
-    std::vector<char> data(file.begin(), file.end());
-    char* f = data.data();
+    QByteArray file = QString("/usr/lib/firmware/bootsplash-themes/" + ui->listWidget->currentItem()->text() + "/bootsplash").toUtf8();
 
-    GHashTable *pkg = pamac_database_search_files( database, &f, 1 );
+    char* f[] = { file.data() };
+
+    GHashTable *pkg = pamac_database_search_files( database, f, 1 );
 
     QString result;
 
@@ -180,7 +180,7 @@ void MainWindow::on_RemoveButton_clicked()
     ui->centralwidget -> setEnabled(  true );
 
     QMessageBox b;
-    b.setText( "Do you really want to remove " + result + "?" );
+    b.setText( tr("Do you really want to remove\n") + result + "?" );
     b.setIcon( QMessageBox::Question );
     b.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
 
@@ -194,13 +194,15 @@ void MainWindow::on_RemoveButton_clicked()
         removeAction.setTimeout( 180000 );
         KAuth::ExecuteJob *job = removeAction.execute();
 
-        QProgressDialog *d = new QProgressDialog( "Please, wait...", nullptr, 0, 0, this );
+        QProgressDialog *d = new QProgressDialog( tr("Please, wait..."), nullptr, 0, 0, this );
         d->setWindowModality( Qt::WindowModal );
         d->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
 
         connect( job,
                  &KAuth::ExecuteJob::finished,
+                 this,
                  [=](){ d->close(); refresh(); }     );
+
         job->start();
         d->open();
 

@@ -104,8 +104,8 @@ int status(){
     }
     theme.replace( "bootsplash.bootfile=/bootsplash-themes/", "" ).replace( "/bootsplash", "" ).replace( "\n", "" );
 
-    QString ok = "[\033[42m\ ok \033[00m\]",
-          warn = "[\033[43m\warn\033[00m\]";
+    QString ok = "[\033[42m ok \033[00m]",
+          warn = "[\033[43mwarn\033[00m]";
 
     out << "Bootsplash status:\n"
         << ( ( bootfileFlag&!theme.isEmpty() )?

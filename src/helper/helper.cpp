@@ -7,6 +7,7 @@
 #include <QEventLoop>
 #include "../root-actions.h"
 
+
 ActionReply MyHelper::changetheme( const QVariantMap &args ){
     QString theme = args["theme"].toString();
 
@@ -33,14 +34,13 @@ ActionReply MyHelper::install( const QVariantMap &args ){
     PamacDatabase *database = pamac_database_new( conf );
     PamacTransaction *transaction = pamac_transaction_new( database );
 
-
     for( const QString& s : qAsConst(toInstall) ){
-        if( pamac_database_search_pkgs(database, s.toUtf8())->len == 0 )
+
+        if( (int)pamac_database_search_pkgs(database, s.toUtf8())->len == 0 )
             pamac_transaction_add_aur_pkg_to_build( transaction, s.toUtf8() );
         else
             pamac_transaction_add_pkg_to_install(   transaction, s.toUtf8() );
     }
-
 
     QEventLoop l(this);
     pamac_transaction_run_async( transaction,

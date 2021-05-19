@@ -29,7 +29,7 @@
    <string notr="true">Manjaro Bootsplash Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset theme=":/icons/bootsplash-manager-gui.svg">
+   <iconset theme=":/icons/sc-apps-bootsplash-manager-gui.svg">
     <normaloff>.</normaloff>.</iconset>
   </property>
   <property name="layoutDirection">
@@ -132,22 +132,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="ApplyButton">
-        <property name="enabled">
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Apply</set>
+        </property>
+        <property name="centerButtons">
          <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Apply</string>
-        </property>
-        <property name="icon">
-         <iconset theme="dialog-ok">
-          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>

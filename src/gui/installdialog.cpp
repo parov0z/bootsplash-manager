@@ -90,7 +90,9 @@ void InstallDialog::on_pushButton_clicked()
     QMessageBox b;
     b.setStandardButtons( QMessageBox::Yes | QMessageBox::No );
     b.setIcon( QMessageBox::Question );
-    b.setText( "To install: " + QString::number( toInstall.size() )+ " themes \nContinue?"  );
+    b.setText( tr("Themes to install: ") +
+               QString::number( toInstall.size() ) +
+               tr("\nContinue?")            );
 
     if( b.exec() == 0x00004000 ){
 
@@ -102,14 +104,17 @@ void InstallDialog::on_pushButton_clicked()
         installAction.setTimeout( 300000 );
         KAuth::ExecuteJob *job = installAction.execute();
 
-        QProgressDialog *d = new QProgressDialog("Installing "+ QString::number( toInstall.size() ) + " themes\nThis may take a few minutes",
+        QProgressDialog *d = new QProgressDialog(tr("Installing...\n") +
+                                                 tr("This may take a few minutes"),
                                                  nullptr, 0, 0, this);
         d->setWindowModality( Qt::WindowModal );
         d->setWindowFlags( Qt::Dialog | Qt::FramelessWindowHint );
 
         connect( job,
                  &KAuth::ExecuteJob::finished,
+                 this,
                  [=](){ d->close(); refresh(); }     );
+
         job->start();
         d->open();
     }

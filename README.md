@@ -1,8 +1,9 @@
 # bootsplash-manager
 Simple bootsplash manager for Manjaro
 <p align="center">
-   <img src="https://raw.githubusercontent.com/ANDRoid7890/bootsplash-manager/master/images/bootsplash-manager-gui.svg"/>
+   <img src="https://raw.githubusercontent.com/ANDRoid7890/bootsplash-manager/master/images/sc-apps-bootsplash-manager-gui.svg"/>
 </p>
+
 
 ## Features
 ### gui
@@ -20,7 +21,6 @@ Simple bootsplash manager for Manjaro
 * Enable bootsplash and change current theme                       `bootsplash-manager --set <theme_name>`
 * Disable bootsplash ( black screen )                              `bootsplash-manager --disable`
 * Disable bootsplash ( log )                                       `bootsplash-manager --set-log`
-  
 
 
 ## Installation
@@ -54,4 +54,9 @@ make
 - [x] gui
 - [x] install/remove dialog
 - [x] theme preview
-- [ ] translations
+- [x] translations
+
+### Localization
+
+You can help with localization by using [Qt Linguist](https://doc.qt.io/Qt-5/linguist-translators.html). To add a new language, copy `data/translations/bootsplash-manager.ts` to `data/translations/bootsplash-manager_<ISO 639-1 language code>_<ISO 3166-1 alpha-2 language code>.ts`, translate it, then add the file to the TS_FILES variable in CMakeLists.txt, and create a pull request. It is also possible to add localized Comment into `data/bootsplash-manager.desktop`.
+
