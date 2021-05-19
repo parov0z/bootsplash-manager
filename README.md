@@ -50,6 +50,9 @@ cd bootsplash-manager
 cmake .
 make
 ```
+## Special thanks
+* [LordTermor](https://github.com/LordTermor) 
+
 ## TODO
 - [x] gui
 - [x] install/remove dialog
