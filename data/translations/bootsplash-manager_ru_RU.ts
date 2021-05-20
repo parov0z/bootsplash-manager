@@ -46,6 +46,11 @@ Continue?</source>
 <context>
     <name>MainWindow</name>
     <message>
+        <location filename="../../src/gui/mainwindow.cpp" line="22"/>
+        <source>No installed themes detected</source>
+        <translation>Темы не найдены</translation>
+    </message>
+    <message>
         <location filename="../../src/gui/mainwindow.cpp" line="132"/>
         <location filename="../../src/gui/mainwindow.cpp" line="197"/>
         <source>Please, wait...</source>

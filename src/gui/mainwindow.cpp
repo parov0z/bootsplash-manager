@@ -19,7 +19,7 @@ void MainWindow::refresh(){
     d.setFilter( QDir::NoDotAndDotDot | QDir::Dirs );
     if ( !d.exists() || d.count() == 0 ){
         QMessageBox m;
-        m.setText( "No installed themes detected" );
+        m.setText( tr("No installed themes detected") );
         m.setIcon( QMessageBox::Information );
         m.exec();
     }
