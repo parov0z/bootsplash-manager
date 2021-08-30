@@ -34,6 +34,8 @@ ActionReply MyHelper::install( const QVariantMap &args ){
     PamacDatabase *database = pamac_database_new( conf );
     PamacTransaction *transaction = pamac_transaction_new( database );
 
+    pamac_config_set_simple_install( conf, true );
+
     for( const QString& s : qAsConst(toInstall) ){
 
         if( (int)pamac_database_search_pkgs(database, s.toUtf8())->len == 0 )
