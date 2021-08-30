@@ -52,12 +52,12 @@ Continue?</source>
     </message>
     <message>
         <location filename="../../src/gui/mainwindow.cpp" line="132"/>
-        <location filename="../../src/gui/mainwindow.cpp" line="197"/>
+        <location filename="../../src/gui/mainwindow.cpp" line="198"/>
         <source>Please, wait...</source>
         <translation>Пожалуйста, подождите...</translation>
     </message>
     <message>
-        <location filename="../../src/gui/mainwindow.cpp" line="183"/>
+        <location filename="../../src/gui/mainwindow.cpp" line="184"/>
         <source>Do you really want to remove
 </source>
         <translation>Вы уверены что хотите удалить

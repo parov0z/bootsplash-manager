@@ -159,9 +159,10 @@ void MainWindow::on_RemoveButton_clicked()
 
     QByteArray file = QString("/usr/lib/firmware/bootsplash-themes/" + ui->listWidget->currentItem()->text() + "/bootsplash").toUtf8();
 
-    char* f[] = { file.data() };
+    GPtrArray* f = g_ptr_array_new();
+    g_ptr_array_add( f, file.data() );
 
-    GHashTable *pkg = pamac_database_search_files( database, f, 1 );
+    GHashTable *pkg = pamac_database_search_files( database, f );
 
     QString result;
 

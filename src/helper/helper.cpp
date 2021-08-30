@@ -37,9 +37,9 @@ ActionReply MyHelper::install( const QVariantMap &args ){
     for( const QString& s : qAsConst(toInstall) ){
 
         if( (int)pamac_database_search_pkgs(database, s.toUtf8())->len == 0 )
-            pamac_transaction_add_aur_pkg_to_build( transaction, s.toUtf8() );
+            pamac_transaction_add_pkg_to_build( transaction, s.toUtf8(), true, true );
         else
-            pamac_transaction_add_pkg_to_install(   transaction, s.toUtf8() );
+            pamac_transaction_add_pkg_to_install( transaction, s.toUtf8() );
     }
 
     QEventLoop l(this);
