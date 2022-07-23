@@ -36,7 +36,8 @@ If it's not:
 - on Manjaro use official one `pacman -S linux-latest`
 - on Arch you can build one of custom kernels from AUR: `linux-bootsplash` 	`linux-manjaro-xanmod`
 ### Install
-AUR package `bootsplash-manager-bin`.
+AUR packages `bootsplash-manager-bin`, `bootsplash-manager-git`.
+Manjaro community repo: `bootsplash manager`.
 
 ## Usage
 1) Search for some themes: `pacman -Ss bootsplash-theme-`
