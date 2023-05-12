@@ -3,6 +3,7 @@ Name=Manjaro Bootsplash Manager
 Comment=Simple bootsplash manager
 Comment[ru]=Управление загрузочными анимациями
 Comment[fr]=Simple gestionnaire de bootsplash
+Comment[de]=Einfacher Startbildschirm-Manager
 Exec=bootsplash-manager-gui
 Icon=bootsplash-manager-gui
 Terminal=false
